@@ -1,0 +1,44 @@
+main {
+  display: flex;
+  flex-direction: column;
+  background-color: rgb(200, 225, 255);
+  border: 2px solid rgb(0, 150, 255);
+}
+
+.text-input-pair {
+  color: rgb(50, 50, 50);
+  padding: 0.5rem;
+}
+
+.text-display {
+  background-color: rgb(200, 225, 255);
+  padding: 0.5rem;
+  margin: 0;
+  line-height: 1.5rem;
+  font-size: 1.5rem;
+  font-style: italic;
+}
+
+.input-display {
+  background-color: rgb(200, 225, 255);
+  border: 2px solid rgb(100, 100, 100);
+  border-width: 2px 0 2px 0;
+  padding: 0.5rem;
+  margin: 0;
+  line-height: 1.5rem;
+  min-height: 1.5rem;
+  font-size: 1.5rem;
+
+  ::ng-deep .correct {
+    color: rgb(0, 150, 0) !important;
+  }
+
+  ::ng-deep .wrong {
+    color: rgb(225, 0, 0) !important;
+  }
+}
+
+#userInput {
+  position: absolute;
+  left: -9999px;
+}
