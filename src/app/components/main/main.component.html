@@ -1,0 +1,19 @@
+<main>
+  <div
+    class="text-input-pair"
+    (click)="inputFocus()"
+    *ngFor="let obj of paragraph | textInputDisplay: userInput"
+  >
+    <div class="text-display">
+      {{ obj.text }}
+    </div>
+    <div class="input-display" [innerHTML]="obj.input"></div>
+  </div>
+  <input
+    [(ngModel)]="userInput"
+    class="user-input"
+    name="userInput"
+    id="userInput"
+    #inputElement
+  />
+</main>
