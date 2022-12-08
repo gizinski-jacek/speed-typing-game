@@ -1,0 +1,7 @@
+<nav>
+  <button type="button" (click)="startCountdown()" [disabled]="gameStarted">
+    START
+  </button>
+  <div class="counter">{{ gameStarted ? gameTime : countdown }}</div>
+  <button type="button" (click)="reset()">RESET</button>
+</nav>
