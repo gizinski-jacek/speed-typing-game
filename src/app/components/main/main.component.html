@@ -1,19 +1,22 @@
-<main>
-  <div
-    class="text-input-pair"
-    (click)="inputFocus()"
-    *ngFor="let obj of paragraph | textInputDisplay: userInput"
-  >
-    <div class="text-display">
-      {{ obj.text }}
+<main (click)="inputUnfocus($event)" #mainElement>
+  <app-header (start)="handleStart()" (end)="handleEnd()"></app-header>
+  <div class="content" (click)="inputFocus($event)" #contentElement>
+    <input
+      [(ngModel)]="userInput"
+      class="user-input"
+      name="userInput"
+      id="userInput"
+      [disabled]="disabled"
+      #inputElement
+    />
+    <div
+      class="quote-input-pair"
+      *ngFor="let obj of quote | textInputDisplay: userInput"
+    >
+      <div class="quote-display">
+        {{ obj.quote }}
+      </div>
+      <div class="input-display" [innerHTML]="obj.input"></div>
     </div>
-    <div class="input-display" [innerHTML]="obj.input"></div>
   </div>
-  <input
-    [(ngModel)]="userInput"
-    class="user-input"
-    name="userInput"
-    id="userInput"
-    #inputElement
-  />
 </main>
