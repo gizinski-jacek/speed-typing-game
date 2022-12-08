@@ -1,5 +1,5 @@
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
-import { textData } from 'src/app/textData';
+import { HttpService } from 'src/app/services/http.service';
 
 @Component({
   selector: 'app-main',
@@ -8,16 +8,41 @@ import { textData } from 'src/app/textData';
 })
 export class MainComponent implements OnInit {
   @ViewChild('inputElement') inputElement!: ElementRef<HTMLInputElement>;
-  paragraph: string = '';
-  userInput: string = '';
+  @ViewChild('contentElement') contentElement!: ElementRef<HTMLDivElement>;
+  @ViewChild('mainElement') mainElement!: ElementRef<HTMLElement>;
 
-  constructor() {}
+  quote: string = '';
+  userInput: string = '';
+  disabled: boolean = true;
+
+  constructor(private http: HttpService) {}
 
   ngOnInit(): void {
-    this.paragraph = textData[Math.floor(Math.random() * textData.length)];
+    this.http.getRandomQuote().subscribe((res) => (this.quote = res.content));
   }
 
-  inputFocus(): void {
+  inputFocus(e: MouseEvent): void {
+    e.stopPropagation();
+    if (this.disabled) return;
+    this.contentElement.nativeElement.classList.add('focused');
     this.inputElement.nativeElement.focus();
+  }
+
+  inputUnfocus(e: MouseEvent): void {
+    e.stopPropagation();
+    this.contentElement.nativeElement.classList.remove('focused');
+    this.inputElement.nativeElement.blur();
+  }
+
+  handleStart(): void {
+    this.disabled = false;
+    this.contentElement.nativeElement.classList.add('focused');
+    this.inputElement.nativeElement.focus();
+  }
+
+  handleEnd(): void {
+    this.disabled = true;
+    this.contentElement.nativeElement.classList.remove('focused');
+    this.inputElement.nativeElement.blur();
   }
 }
