@@ -20,11 +20,6 @@ main {
 
 .content.focused {
   filter: brightness(110%);
-}
-
-.quote-input-pair {
-  color: rgb(50, 50, 50);
-  padding: 0.5rem;
 
   ::ng-deep .custom-cursor {
     height: 1.5rem;
@@ -63,6 +58,11 @@ main {
   }
 }
 
+.quote-input-pair {
+  color: rgb(50, 50, 50);
+  padding: 0.5rem;
+}
+
 .quote-display {
   background-color: rgb(200, 225, 255);
   padding: 0.5rem;
@@ -70,6 +70,7 @@ main {
   line-height: 1.5rem;
   font-size: 1.5rem;
   font-style: italic;
+  user-select: none;
 }
 
 .input-display {
