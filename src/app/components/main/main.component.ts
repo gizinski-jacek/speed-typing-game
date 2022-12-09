@@ -13,7 +13,7 @@ export class MainComponent implements OnInit {
 
   quote: string = '';
   userInput: string = '';
-  disabled: boolean = true;
+  started: boolean = false;
 
   constructor(private http: HttpService) {}
 
@@ -23,7 +23,7 @@ export class MainComponent implements OnInit {
 
   inputFocus(e: MouseEvent): void {
     e.stopPropagation();
-    if (this.disabled) return;
+    if (!this.started) return;
     this.contentElement.nativeElement.classList.add('focused');
     this.inputElement.nativeElement.focus();
   }
@@ -35,13 +35,20 @@ export class MainComponent implements OnInit {
   }
 
   handleStart(): void {
-    this.disabled = false;
+    this.started = true;
     this.contentElement.nativeElement.classList.add('focused');
     this.inputElement.nativeElement.focus();
   }
 
   handleEnd(): void {
-    this.disabled = true;
+    this.started = false;
+    this.contentElement.nativeElement.classList.remove('focused');
+    this.inputElement.nativeElement.blur();
+  }
+
+  handleReset(): void {
+    this.userInput = '';
+    this.started = false;
     this.contentElement.nativeElement.classList.remove('focused');
     this.inputElement.nativeElement.blur();
   }
