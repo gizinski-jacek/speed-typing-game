@@ -1,12 +1,16 @@
 <main (click)="inputUnfocus($event)" #mainElement>
-  <app-header (start)="handleStart()" (end)="handleEnd()"></app-header>
+  <app-header
+    (start)="handleStart()"
+    (end)="handleEnd()"
+    (reset)="handleReset()"
+  >
+  </app-header>
   <div class="content" (click)="inputFocus($event)" #contentElement>
     <input
       [(ngModel)]="userInput"
       class="user-input"
       name="userInput"
       id="userInput"
-      [disabled]="disabled"
       #inputElement
     />
     <div
