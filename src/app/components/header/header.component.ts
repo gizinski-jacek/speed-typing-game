@@ -9,6 +9,7 @@ import { Subscription, timer } from 'rxjs';
 export class HeaderComponent implements OnInit {
   @Output() start = new EventEmitter<any>();
   @Output() end = new EventEmitter<any>();
+  @Output() reset = new EventEmitter<any>();
   countdownSub: Subscription | null = null;
   countdown: number = 5;
   gameStarted: boolean = false;
@@ -23,6 +24,7 @@ export class HeaderComponent implements OnInit {
   }
 
   startCountdown(): void {
+    if (this.countdownSub) return;
     this.countdownSub = timer(0, 1000).subscribe(() => {
       const newTime = this.countdown - 1;
       if (this.gameStarted) {
@@ -52,11 +54,12 @@ export class HeaderComponent implements OnInit {
     });
   }
 
-  reset(): void {
+  resetGame(): void {
     this.gameStarted = false;
     this.countdown = 5;
     this.gameTime = 60;
     this.countdownSub?.unsubscribe();
     this.gameTimeSub?.unsubscribe();
+    this.reset.emit();
   }
 }
