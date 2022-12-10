@@ -5,6 +5,18 @@
   width: 100%;
 }
 
+.controls {
+  display: flex;
+
+  .counter {
+    min-width: 80px;
+    background-color: rgb(0, 255, 200);
+    color: rgb(0, 0, 0);
+    padding: 1rem;
+    font-size: 1.5rem;
+  }
+}
+
 main {
   flex: 1;
   display: block;
