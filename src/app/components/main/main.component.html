@@ -1,16 +1,25 @@
 <main (click)="inputUnfocus($event)" #mainElement>
-  <app-header
-    (start)="handleStart()"
-    (end)="handleEnd()"
-    (reset)="handleReset()"
-  >
-  </app-header>
+  <div class="controls">
+    <button type="button" (click)="startCountdown()" [disabled]="gameStarted">
+      START
+    </button>
+    <div class="counter">
+      {{ gameStarted ? "Time: " + gameTime : "Countdown: " + countdown }}
+    </div>
+    <button type="button" (click)="resetGame()">RESET</button>
+    <ng-container *ngIf="!gameStarted && score">
+      <div class="user-game-time">Your time:{{ userGameTime }}</div>
+      <div class="user-score">Your score:{{ score.userScore }}</div>
+      <div class="max-score">Max score:{{ score.maxScore }}</div>
+    </ng-container>
+  </div>
   <div class="content" (click)="inputFocus($event)" #contentElement>
     <input
       [(ngModel)]="userInput"
       class="user-input"
       name="userInput"
       id="userInput"
+      (ngModelChange)="inputChange($event)"
       #inputElement
     />
     <div
