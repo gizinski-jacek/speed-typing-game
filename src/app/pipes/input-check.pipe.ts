@@ -7,45 +7,37 @@ export class InputCheckPipe implements PipeTransform {
   transform(
     quote: string,
     userInput: string
-  ): { quote: string; input: string }[] | any {
-    const splitQuote: string[] = [];
-    const splitUserInput: string[] = [];
-    while (quote.length > 32) {
-      let end: number = 0;
-      end = quote.substring(0, 32).lastIndexOf(' ');
-      splitQuote.push(quote.substring(0, end));
-      quote = quote.substring(end);
-      splitUserInput.push(userInput.substring(0, end));
-      userInput = userInput.substring(end);
-    }
-    splitQuote.push(quote);
-    splitUserInput.push(userInput);
-    let checkedInputs = splitUserInput.map((string, index) =>
-      string
-        .split('')
-        .map((letter, i, array) => {
-          let html: string = '';
-          if (letter === splitQuote[index][i]) {
-            html = `<span class="correct">${letter}</span>`;
-          } else {
-            html = `<span class="wrong">${letter}</span>`;
-          }
-          if (!array.length) {
-            return '<span class="custom-cursor"></span>';
-          }
-          if (
-            i === array.length - 1 &&
-            array.length !== splitQuote[index].length
-          ) {
-            html = html + '<span class="custom-cursor"></span>';
-          }
-          return html;
-        })
-        .join('')
-    );
-    const pairs = splitQuote.map((string, index) => {
-      return { quote: string, input: checkedInputs[index] };
+  ): { quote: string; input: string }[] {
+    const wordsInQuote: string[] = quote.split(' ');
+    const wordsInUserInput: string[] = userInput.split(' ');
+    const checkedWords = wordsInUserInput.map((word, index, array) => {
+      let html: string = '';
+      if (word === wordsInQuote[index]) {
+        html = `<span class="correct">${word}</span>`;
+      } else {
+        html = `<span class="wrong">${word}</span>`;
+      }
+      if (
+        index === array.length - 1 &&
+        array.length !== wordsInQuote[index].length
+      ) {
+        html = html + '<span class="custom-cursor"></span>';
+      }
+      return html;
     });
-    return pairs;
+    const quoteLines: string[] = [];
+    const userInputLines: string[] = [];
+    for (let i = 0; i < wordsInQuote.length; i += 8) {
+      const chunk = wordsInQuote.slice(i, i + 8).join(' ');
+      quoteLines.push(chunk);
+    }
+    for (let i = 0; i < checkedWords.length; i += 8) {
+      const chunk = checkedWords.slice(i, i + 8).join(' ');
+      userInputLines.push(chunk);
+    }
+    const quoteWordUserInputWordPair = quoteLines.map((word, index) => {
+      return { quote: word, input: userInputLines[index] };
+    });
+    return quoteWordUserInputWordPair;
   }
 }
