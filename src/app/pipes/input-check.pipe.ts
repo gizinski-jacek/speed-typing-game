@@ -1,9 +1,9 @@
 import { Pipe, PipeTransform } from '@angular/core';
 
 @Pipe({
-  name: 'textInputDisplay',
+  name: 'inputCheck',
 })
-export class TextInputDisplayPipe implements PipeTransform {
+export class InputCheckPipe implements PipeTransform {
   transform(
     quote: string,
     userInput: string
@@ -20,7 +20,6 @@ export class TextInputDisplayPipe implements PipeTransform {
     }
     splitQuote.push(quote);
     splitUserInput.push(userInput);
-
     let checkedInputs = splitUserInput.map((string, index) =>
       string
         .split('')
