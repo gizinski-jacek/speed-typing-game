@@ -14,35 +14,38 @@ export class MainComponent implements OnInit {
 
   quote: string = '';
   userInput: string = '';
-  gameStarted: boolean = false;
   countdownSub: Subscription | null = null;
   countdown: number = 5;
+  gameStarted: boolean = false;
   gameTimeSub: Subscription | null = null;
-  gameTime: number | undefined = undefined;
+  gameStartTime: number | null = null;
+  gameEndTime: number | null = null;
   userGameTime: number = 0;
-  score: { userScore: number; maxScore: number } | null = null;
+  score: {
+    userScore: number;
+    maxScore: number;
+    wpm: number;
+    cwpm: number;
+  } | null = null;
 
   constructor(private http: HttpService) {}
 
   ngOnInit(): void {
-    this.http.getRandomQuote().subscribe((res) => {
-      this.quote = res.content;
-      this.gameTime = Math.round(res.content.length / 5);
-    });
+    this.http.getRandomQuote().subscribe((res) => (this.quote = res.content));
   }
 
   ngOnDestry(): void {
     this.countdownSub?.unsubscribe();
-    this.gameTimeSub?.unsubscribe();
   }
 
-  inputChange(input: any): void {
+  inputChange(input: string): void {
     this.userInput = input;
-    if (this.gameStarted && this.userInput.length >= this.quote.length) {
-      this.score = this.score = this.calculateScore(
+    if (this.gameStartTime && this.userInput.length >= this.quote.length) {
+      this.userGameTime = new Date().getTime();
+      this.score = this.calculateScore(
         this.quote,
         this.userInput,
-        Math.round(this.quote.length / 5 - this.gameTime!)
+        this.userGameTime
       );
       this.endGame();
     }
@@ -50,7 +53,7 @@ export class MainComponent implements OnInit {
 
   inputFocus(e: MouseEvent): void {
     e.stopPropagation();
-    if (!this.gameStarted) return;
+    if (!this.gameStartTime) return;
     this.contentElement.nativeElement.classList.add('focused');
     this.inputElement.nativeElement.focus();
   }
@@ -80,20 +83,21 @@ export class MainComponent implements OnInit {
   }
 
   startGameTimer(): void {
+    this.gameStarted = true;
+    this.gameStartTime = new Date().getTime();
+    this.gameEndTime = new Date().getTime() + (this.quote.length / 5) * 1000;
     this.countdownSub?.unsubscribe();
     this.countdownSub = null;
-    this.gameStarted = true;
     this.contentElement.nativeElement.classList.add('focused');
     this.inputElement.nativeElement.focus();
-    this.gameTimeSub = timer(0, 1000).subscribe(() => {
-      const newTime = this.gameTime! - 1;
-      if (newTime >= 0) {
-        this.gameTime = newTime;
-      } else {
+    this.gameTimeSub = timer(0, 100).subscribe(() => {
+      const timeNow = new Date().getTime();
+      this.userGameTime = timeNow - this.gameStartTime!;
+      if (timeNow >= this.gameEndTime!) {
         this.score = this.calculateScore(
           this.quote,
           this.userInput,
-          Math.round(this.quote.length / 5 - this.gameTime!)
+          this.userGameTime
         );
         this.endGame();
       }
@@ -101,11 +105,10 @@ export class MainComponent implements OnInit {
   }
 
   endGame(): void {
+    this.gameStarted = false;
     this.contentElement.nativeElement.classList.remove('focused');
     this.inputElement.nativeElement.blur();
     this.countdown = 5;
-    this.gameStarted = false;
-    this.userGameTime = Math.round(this.quote.length / 5 - this.gameTime!);
     this.countdownSub?.unsubscribe();
     this.countdownSub = null;
     this.gameTimeSub?.unsubscribe();
@@ -113,23 +116,39 @@ export class MainComponent implements OnInit {
   }
 
   resetGame(): void {
+    this.score = null;
+    this.gameStarted = false;
+    this.contentElement.nativeElement.classList.remove('focused');
+    this.inputElement.nativeElement.blur();
+    this.countdown = 5;
     this.userInput = '';
     this.userGameTime = 0;
-    this.gameTime = Math.round(this.quote.length / 5);
-    this.endGame();
+    this.gameStartTime = null;
+    this.gameEndTime = null;
+    this.countdownSub?.unsubscribe();
+    this.countdownSub = null;
+    this.gameTimeSub?.unsubscribe();
+    this.gameTimeSub = null;
   }
 
   calculateScore(
     quote: string,
     userInput: string,
     userTime: number
-  ): { userScore: number; maxScore: number } {
+  ): {
+    userScore: number;
+    maxScore: number;
+    wpm: number;
+    cwpm: number;
+  } {
     const splitQuote: string[] = quote.split(' ');
     const splitUserInput: string[] = userInput.split(' ');
     let maxScore: number = 0;
     let userScore: number = 0;
+    let correctWords: number = 0;
     splitQuote.forEach((str, i) => {
       if (splitUserInput[i] === str) {
+        correctWords++;
         if (str.length <= 3) {
           userScore = userScore + 1;
         } else if (str.length > 3 && str.length <= 7) {
@@ -150,9 +169,12 @@ export class MainComponent implements OnInit {
         maxScore = maxScore + 4;
       }
     });
-    if (userScore === maxScore) {
-      userScore = userScore + userTime * 5;
-    }
-    return { userScore, maxScore };
+    // Words per minute
+    const wpm = splitUserInput.length
+      ? Math.round((splitUserInput.length / (userTime / 1000)) * 60)
+      : 0;
+    // Correct words per minute
+    const cwpm = Math.round((correctWords / (userTime / 1000)) * 60);
+    return { userScore, maxScore, wpm, cwpm };
   }
 }
