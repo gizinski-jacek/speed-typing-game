@@ -1,12 +1,20 @@
 :host {
-  display: flex;
-  flex-direction: column;
   min-height: 100vh;
   width: 100%;
 }
 
-.controls {
+main {
+  flex: 1;
   display: flex;
+  gap: 2rem;
+  padding: 2rem;
+}
+
+.controls {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  height: fit-content;
 
   .counter {
     min-width: 80px;
@@ -17,17 +25,13 @@
   }
 }
 
-main {
-  flex: 1;
-  display: block;
-  padding: 2rem;
-}
-
 .content {
+  flex: 3;
   display: flex;
   flex-direction: column;
   background-color: rgb(200, 225, 255);
   border: 2px solid rgb(0, 150, 255);
+  height: fit-content;
 }
 
 .content.focused {
@@ -77,6 +81,7 @@ main {
 
 .quote-display {
   background-color: rgb(200, 225, 255);
+  color: rgba(0, 0, 0, 0.5);
   padding: 0.5rem;
   margin: 0;
   line-height: 1.5rem;
@@ -94,6 +99,7 @@ main {
   line-height: 1.5rem;
   min-height: 1.5rem;
   font-size: 1.5rem;
+  word-break: break-all;
 
   ::ng-deep .correct {
     color: rgb(0, 150, 0) !important;
