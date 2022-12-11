@@ -1,16 +1,39 @@
 <main (click)="inputUnfocus($event)" #mainElement>
   <div class="controls">
-    <button type="button" (click)="startCountdown()" [disabled]="gameStarted">
+    <button
+      type="button"
+      (click)="startCountdown()"
+      [disabled]="countdownSub || gameStarted || !quote"
+    >
       START
     </button>
-    <div class="counter">
-      {{ gameStarted ? "Time: " + gameTime : "Countdown: " + countdown }}
+    <div class="counter" *ngIf="gameStarted; else started">
+      Time Left:
+      {{
+        (gameEndTime! - gameStartTime! - userGameTime) / 1000
+          | roundToDecimal : 1
+      }}
     </div>
-    <button type="button" (click)="resetGame()">RESET</button>
+    <ng-template #started>
+      <div class="counter">
+        {{ "Countdown: " + countdown }}
+      </div>
+    </ng-template>
+    <button type="button" (click)="resetGame()" [disabled]="!quote">
+      RESET
+    </button>
     <ng-container *ngIf="!gameStarted && score">
-      <div class="user-game-time">Your time:{{ userGameTime }}</div>
+      <div class="user-game-time">
+        Your time:{{ userGameTime / 1000 | roundToDecimal : 1 }}
+      </div>
       <div class="user-score">Your score:{{ score.userScore }}</div>
       <div class="max-score">Max score:{{ score.maxScore }}</div>
+      <div class="wpm">
+        Words per minute:{{ score.wpm | roundToDecimal : 2 }}
+      </div>
+      <div class="cwpm">
+        Correct words per minute:{{ score.cwpm | roundToDecimal : 2 }}
+      </div>
     </ng-container>
   </div>
   <div class="content" (click)="inputFocus($event)" #contentElement>
@@ -24,11 +47,9 @@
     />
     <div
       class="quote-input-pair"
-      *ngFor="let obj of quote | textInputDisplay: userInput"
+      *ngFor="let obj of quote | inputCheck : userInput; index as i"
     >
-      <div class="quote-display">
-        {{ obj.quote }}
-      </div>
+      <div class="quote-display" [innerHTML]="obj.quote"></div>
       <div class="input-display" [innerHTML]="obj.input"></div>
     </div>
   </div>
