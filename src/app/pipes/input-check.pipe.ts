@@ -15,16 +15,14 @@ export class InputCheckPipe implements PipeTransform {
     // or "wrong" class for styling purposes.
     const checkedWords = wordsInUserInput.map((word, index, array) => {
       let html: string = '';
-      if (!array[0] || !wordsInQuote[index]) return html;
+      if (!array[0] || !wordsInQuote[index])
+        html = '<span class="custom-cursor"></span>';
       if (word === wordsInQuote[index]) {
         html = `<span class="correct">${word}</span>`;
       } else {
         html = `<span class="wrong">${word}</span>`;
       }
-      if (
-        index === array.length - 1 &&
-        array.length !== wordsInQuote[index].length
-      ) {
+      if (index === array.length - 1) {
         html = html + '<span class="custom-cursor"></span>';
       }
       return html;
