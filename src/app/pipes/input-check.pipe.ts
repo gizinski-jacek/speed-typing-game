@@ -10,11 +10,12 @@ export class InputCheckPipe implements PipeTransform {
   ): { quote: string; input: string }[] {
     // Splitting quote and user input into words arrays.
     const wordsInQuote: string[] = quote.split(' ');
-    const wordsInUserInput: string[] = userInput.split(' ').filter((w) => w);
+    const wordsInUserInput: string[] = userInput.split(' ');
     // Checking user input words against quote words and applying "correct"
     // or "wrong" class for styling purposes.
     const checkedWords = wordsInUserInput.map((word, index, array) => {
       let html: string = '';
+      if (!array[0] || !wordsInQuote[index]) return html;
       if (word === wordsInQuote[index]) {
         html = `<span class="correct">${word}</span>`;
       } else {
@@ -28,11 +29,16 @@ export class InputCheckPipe implements PipeTransform {
       }
       return html;
     });
-
+    // Marking current word to repeat.
+    const wordsInQuoteWithMarkedCurrentWord = wordsInQuote.map((word, i) =>
+      i === wordsInUserInput.length - 1
+        ? `<span class="current-word">${word}</span>`
+        : word
+    );
     // Splitting words into 8 word long lines.
     const quoteLines: string[] = [];
-    for (let i = 0; i < wordsInQuote.length; i += 8) {
-      const chunk = wordsInQuote.slice(i, i + 8).join(' ');
+    for (let i = 0; i < wordsInQuoteWithMarkedCurrentWord.length; i += 8) {
+      const chunk = wordsInQuoteWithMarkedCurrentWord.slice(i, i + 8).join(' ');
       quoteLines.push(chunk);
     }
     const userInputLines: string[] = [];
@@ -40,8 +46,8 @@ export class InputCheckPipe implements PipeTransform {
       const chunk = checkedWords.slice(i, i + 8).join(' ');
       userInputLines.push(chunk);
     }
-    const quoteWordUserInputWordPair = quoteLines.map((word, index) => {
-      return { quote: word, input: userInputLines[index] };
+    const quoteWordUserInputWordPair = quoteLines.map((line, index) => {
+      return { quote: line, input: userInputLines[index] };
     });
     return quoteWordUserInputWordPair;
   }
