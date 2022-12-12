@@ -38,7 +38,8 @@ main {
   filter: brightness(110%);
 
   ::ng-deep .custom-cursor {
-    height: 1.5rem;
+    display: inline-block;
+    height: 1.25rem;
     position: relative;
 
     &::after {
@@ -77,6 +78,7 @@ main {
 .quote-input-pair {
   color: rgb(50, 50, 50);
   padding: 0.5rem;
+  word-spacing: 0.5rem;
 }
 
 .quote-display {
@@ -88,6 +90,12 @@ main {
   font-size: 1.5rem;
   font-style: italic;
   user-select: none;
+
+  ::ng-deep .current-word {
+    display: inline-block;
+    transform: translateY(4px);
+    color: rgb(0, 150, 255);
+  }
 }
 
 .input-display {
