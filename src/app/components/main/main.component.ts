@@ -53,7 +53,7 @@ export class MainComponent implements OnInit {
 
   inputFocus(e: MouseEvent): void {
     e.stopPropagation();
-    if (!this.gameStartTime) return;
+    if (!this.gameStarted) return;
     this.contentElement.nativeElement.classList.add('focused');
     this.inputElement.nativeElement.focus();
   }
