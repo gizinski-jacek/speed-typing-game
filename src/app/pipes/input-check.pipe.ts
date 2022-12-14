@@ -6,7 +6,8 @@ import { Pipe, PipeTransform } from '@angular/core';
 export class InputCheckPipe implements PipeTransform {
   transform(
     quote: string,
-    userInput: string
+    userInput: string,
+    gameStarted: boolean
   ): { quote: string; input: string }[] {
     // Splitting quote and user input into words arrays.
     const wordsInQuote: string[] = quote.split(' ');
@@ -15,8 +16,12 @@ export class InputCheckPipe implements PipeTransform {
     // or "wrong" class for styling purposes.
     const checkedWords = wordsInUserInput.map((word, index, array) => {
       let html: string = '';
-      if (!array[0] || !wordsInQuote[index])
-        html = '<span class="custom-cursor"></span>';
+      if (!array[0]) {
+        return '<span class="custom-cursor"></span>';
+      }
+      if (!wordsInQuote[index]) {
+        return;
+      }
       if (word === wordsInQuote[index]) {
         html = `<span class="correct">${word}</span>`;
       } else {
@@ -27,12 +32,14 @@ export class InputCheckPipe implements PipeTransform {
       }
       return html;
     });
-    // Marking current word to repeat.
-    const wordsInQuoteWithMarkedCurrentWord = wordsInQuote.map((word, i) =>
-      i === wordsInUserInput.length - 1
-        ? `<span class="current-word">${word}</span>`
-        : word
-    );
+    // Marking current word to repeat if games has started.
+    const wordsInQuoteWithMarkedCurrentWord = gameStarted
+      ? wordsInQuote.map((word, i) =>
+          i === wordsInUserInput.length - 1
+            ? `<span class="current-word">${word}</span>`
+            : word
+        )
+      : wordsInQuote;
     // Splitting words into 8 word long lines.
     const quoteLines: string[] = [];
     for (let i = 0; i < wordsInQuoteWithMarkedCurrentWord.length; i += 8) {
@@ -44,7 +51,18 @@ export class InputCheckPipe implements PipeTransform {
       const chunk = checkedWords.slice(i, i + 8).join(' ');
       userInputLines.push(chunk);
     }
-    const quoteWordUserInputWordPair = quoteLines.map((line, index) => {
+    // Hiding all lines except for the first one.
+    // Revealing next line when user types in
+    // enough words of current lines
+    const visibleQuoteLines = quoteLines.map((line, index, array) =>
+      index === 0
+        ? line
+        : userInputLines[index - 1]?.split(/(?!span) (?!class)/gm).length >=
+          array[index - 1]?.split(/(?!span) (?!class)/gm).length - 1
+        ? line
+        : `<span class="line-hidden">${line}</span>`
+    );
+    const quoteWordUserInputWordPair = visibleQuoteLines.map((line, index) => {
       return { quote: line, input: userInputLines[index] };
     });
     return quoteWordUserInputWordPair;
