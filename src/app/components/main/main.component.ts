@@ -40,7 +40,10 @@ export class MainComponent implements OnInit {
 
   inputChange(input: string): void {
     this.userInput = input;
-    if (this.gameStartTime && this.userInput.length >= this.quote.length) {
+    const sameCharacterLength = this.userInput.length >= this.quote.length;
+    const sameWordLength =
+      this.userInput.split(' ').length > this.quote.split(' ').length;
+    if (this.gameStarted && (sameCharacterLength || sameWordLength)) {
       this.userGameTime = new Date().getTime();
       this.score = this.calculateScore(
         this.quote,
@@ -89,6 +92,7 @@ export class MainComponent implements OnInit {
     this.countdownSub?.unsubscribe();
     this.countdownSub = null;
     this.contentElement.nativeElement.classList.add('focused');
+    this.contentElement.nativeElement.classList.remove('disabled');
     this.inputElement.nativeElement.focus();
     this.gameTimeSub = timer(0, 100).subscribe(() => {
       const timeNow = new Date().getTime();
@@ -107,6 +111,7 @@ export class MainComponent implements OnInit {
   endGame(): void {
     this.gameStarted = false;
     this.contentElement.nativeElement.classList.remove('focused');
+    this.contentElement.nativeElement.classList.add('disabled');
     this.inputElement.nativeElement.blur();
     this.countdown = 5;
     this.countdownSub?.unsubscribe();
@@ -119,6 +124,7 @@ export class MainComponent implements OnInit {
     this.score = null;
     this.gameStarted = false;
     this.contentElement.nativeElement.classList.remove('focused');
+    this.contentElement.nativeElement.classList.add('disabled');
     this.inputElement.nativeElement.blur();
     this.countdown = 5;
     this.userInput = '';
