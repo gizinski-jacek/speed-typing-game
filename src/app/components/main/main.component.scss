@@ -1,27 +1,64 @@
-:host {
-  min-height: 100vh;
-  width: 100%;
-}
-
 main {
-  flex: 1;
+  min-height: 100vh;
   display: flex;
   gap: 2rem;
+  height: 100%;
   padding: 2rem;
 }
 
-.controls {
+.navbar {
   flex: 1;
   display: flex;
   flex-direction: column;
+  gap: 2rem;
   height: fit-content;
+  text-align: justify;
 
-  .counter {
-    min-width: 80px;
-    background-color: rgb(0, 255, 200);
-    color: rgb(0, 0, 0);
-    padding: 1rem;
-    font-size: 1.5rem;
+  .controls {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    text-align: justify;
+
+    .countdown,
+    .time-left {
+      flex: 1;
+      color: rgb(255, 255, 255);
+      border: 2px solid rgb(255, 255, 255);
+      background-color: rgb(0, 100, 100);
+      border-width: 0 2px 0 2px;
+      padding: 2rem;
+      font-size: 1.5rem;
+      transition: 0.15s ease-in-out;
+    }
+
+    .time-left {
+      background-color: rgb(0, 150, 150);
+    }
+
+    button {
+      font-size: 1.25rem;
+      color: rgb(255, 255, 255);
+      background-color: rgb(0, 0, 0);
+      border: 2px solid rgb(255, 255, 255);
+      border-radius: 1rem 1rem 0 0;
+      padding: 0.5rem;
+      transition: 0.15s ease-in-out;
+      cursor: pointer;
+
+      &.reset {
+        border-radius: 0 0 1rem 1rem;
+      }
+
+      &:hover {
+        background-color: rgb(50, 50, 50);
+      }
+
+      &:disabled {
+        background-color: rgb(225, 225, 225);
+        cursor: initial;
+      }
+    }
   }
 }
 
@@ -29,13 +66,20 @@ main {
   flex: 3;
   display: flex;
   flex-direction: column;
-  background-color: rgb(200, 225, 255);
-  border: 2px solid rgb(0, 150, 255);
+  gap: 1rem;
+  color: rgb(255, 255, 255);
+  background-color: rgb(75, 75, 75);
+  border: 2px solid rgb(255, 255, 255);
+  border-radius: 1rem;
   height: fit-content;
+  transition: 0.15s ease-in-out;
+  box-shadow: 0 0 4px 2px rgb(255, 255, 255);
 }
 
 .content.focused {
-  filter: brightness(110%);
+  background-color: rgb(0, 0, 0);
+  border-color: rgb(0, 200, 200);
+  box-shadow: 0 0 4px 2px rgb(0, 200, 200);
 
   ::ng-deep .custom-cursor {
     display: inline-block;
@@ -50,7 +94,7 @@ main {
       display: block;
       width: 2px;
       height: 1.5rem;
-      background-color: rgba(0, 0, 0, 0.25);
+      background-color: rgba(255, 255, 255, 0.75);
       z-index: 5;
       animation: blink 1.25s infinite;
     }
@@ -75,15 +119,17 @@ main {
   }
 }
 
+.content.disabled {
+  border-color: rgb(255, 255, 255);
+  box-shadow: none;
+}
+
 .quote-input-pair {
-  color: rgb(50, 50, 50);
   padding: 0.5rem;
   word-spacing: 0.5rem;
 }
 
 .quote-display {
-  background-color: rgb(200, 225, 255);
-  color: rgba(0, 0, 0, 0.5);
   padding: 0.5rem;
   margin: 0;
   line-height: 1.5rem;
@@ -93,14 +139,21 @@ main {
 
   ::ng-deep .current-word {
     display: inline-block;
-    transform: translateY(4px);
-    color: rgb(0, 150, 255);
+    transform: translateY(2px);
+    color: rgb(255, 225, 0);
+  }
+
+  ::ng-deep .line-hidden {
+    visibility: visible;
+  }
+
+  ::ng-deep .line-hidden {
+    visibility: hidden;
   }
 }
 
 .input-display {
-  background-color: rgb(200, 225, 255);
-  border: 2px solid rgb(100, 100, 100);
+  border: 2px solid rgb(200, 200, 200);
   border-width: 2px 0 2px 0;
   padding: 0.5rem;
   margin: 0;
@@ -110,7 +163,7 @@ main {
   word-break: break-all;
 
   ::ng-deep .correct {
-    color: rgb(0, 150, 0) !important;
+    color: rgb(0, 225, 0) !important;
   }
 
   ::ng-deep .wrong {
@@ -134,9 +187,26 @@ main {
       display: block;
       width: 2px;
       height: 1.5rem;
-      background-color: rgba(0, 0, 0, 0.5);
+      background-color: rgba(255, 255, 0, 0.5);
       z-index: 5;
       animation: blink 1.25s infinite;
+    }
+  }
+}
+
+.game-stats {
+  font-size: 1.25rem;
+  border: 2px solid rgb(255, 255, 255);
+  border-radius: 1rem;
+  padding: 1rem;
+  line-height: 1.5rem;
+  background-color: rgb(100, 50, 150);
+
+  div:nth-child(even) {
+    color: yellow;
+
+    &:not(:last-child) {
+      margin-bottom: 1rem;
     }
   }
 }
