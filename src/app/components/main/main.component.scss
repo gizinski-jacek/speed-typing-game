@@ -13,50 +13,67 @@ main {
   gap: 2rem;
   height: fit-content;
   text-align: justify;
+}
 
-  .controls {
+.controls {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  text-align: justify;
+
+  .countdown,
+  .time-left {
     flex: 1;
-    display: flex;
-    flex-direction: column;
-    text-align: justify;
+    color: rgb(255, 255, 255);
+    border: 2px solid rgb(255, 255, 255);
+    background-color: rgb(0, 100, 100);
+    border-width: 0 2px 0 2px;
+    padding: 2rem;
+    font-size: 1.5rem;
+    transition: 0.15s ease-in-out;
+  }
 
-    .countdown,
-    .time-left {
-      flex: 1;
-      color: rgb(255, 255, 255);
-      border: 2px solid rgb(255, 255, 255);
-      background-color: rgb(0, 100, 100);
-      border-width: 0 2px 0 2px;
-      padding: 2rem;
-      font-size: 1.5rem;
-      transition: 0.15s ease-in-out;
+  .time-left {
+    background-color: rgb(0, 150, 150);
+  }
+
+  button {
+    font-size: 1.25rem;
+    color: rgb(255, 255, 255);
+    background-color: rgb(0, 0, 0);
+    border: 2px solid rgb(255, 255, 255);
+    border-radius: 1rem 1rem 0 0;
+    padding: 0.5rem;
+    transition: 0.15s ease-in-out;
+    cursor: pointer;
+
+    &.reset {
+      border-radius: 0 0 1rem 1rem;
     }
 
-    .time-left {
-      background-color: rgb(0, 150, 150);
+    &:hover {
+      background-color: rgb(50, 50, 50);
     }
 
-    button {
-      font-size: 1.25rem;
-      color: rgb(255, 255, 255);
-      background-color: rgb(0, 0, 0);
-      border: 2px solid rgb(255, 255, 255);
-      border-radius: 1rem 1rem 0 0;
-      padding: 0.5rem;
-      transition: 0.15s ease-in-out;
-      cursor: pointer;
+    &:disabled {
+      background-color: rgb(225, 225, 225);
+      cursor: initial;
+    }
+  }
 
-      &.reset {
-        border-radius: 0 0 1rem 1rem;
-      }
+  .game-stats {
+    font-size: 1.25rem;
+    border: 2px solid rgb(255, 255, 255);
+    border-radius: 1rem;
+    padding: 1rem;
+    line-height: 1.5rem;
+    background-color: rgb(100, 50, 150);
 
-      &:hover {
-        background-color: rgb(50, 50, 50);
-      }
+    div:nth-child(even) {
+      color: yellow;
 
-      &:disabled {
-        background-color: rgb(225, 225, 225);
-        cursor: initial;
+      &:not(:last-child) {
+        margin-bottom: 1rem;
       }
     }
   }
@@ -74,6 +91,11 @@ main {
   height: fit-content;
   transition: 0.15s ease-in-out;
   box-shadow: 0 0 4px 2px rgb(255, 255, 255);
+}
+
+.content.disabled {
+  border-color: rgb(255, 255, 255);
+  box-shadow: none;
 }
 
 .content.focused {
@@ -119,9 +141,10 @@ main {
   }
 }
 
-.content.disabled {
-  border-color: rgb(255, 255, 255);
-  box-shadow: none;
+#userInput {
+  position: absolute;
+  left: -9999px;
+  opacity: 0;
 }
 
 .quote-input-pair {
@@ -141,10 +164,6 @@ main {
     display: inline-block;
     transform: translateY(2px);
     color: rgb(255, 225, 0);
-  }
-
-  ::ng-deep .line-hidden {
-    visibility: visible;
   }
 
   ::ng-deep .line-hidden {
@@ -168,45 +187,5 @@ main {
 
   ::ng-deep .wrong {
     color: rgb(225, 0, 0) !important;
-  }
-}
-
-#userInput {
-  position: absolute;
-  left: -9999px;
-  opacity: 0;
-
-  &:focus + .input-display {
-    position: relative;
-
-    &::after {
-      content: "";
-      position: absolute;
-      top: 0;
-      left: 2px;
-      display: block;
-      width: 2px;
-      height: 1.5rem;
-      background-color: rgba(255, 255, 0, 0.5);
-      z-index: 5;
-      animation: blink 1.25s infinite;
-    }
-  }
-}
-
-.game-stats {
-  font-size: 1.25rem;
-  border: 2px solid rgb(255, 255, 255);
-  border-radius: 1rem;
-  padding: 1rem;
-  line-height: 1.5rem;
-  background-color: rgb(100, 50, 150);
-
-  div:nth-child(even) {
-    color: yellow;
-
-    &:not(:last-child) {
-      margin-bottom: 1rem;
-    }
   }
 }
