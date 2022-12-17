@@ -1,65 +1,51 @@
-<main (click)="inputUnfocus($event)" #mainElement>
-  <div class="navbar">
-    <div class="controls">
-      <button
-        type="button"
-        class="start"
-        (click)="startCountdown()"
-        [disabled]="countdownSub || gameStarted || !quote"
+<div class="container" (click)="inputUnfocus($event)" #containerElement>
+  <app-header
+    [btnDisabled]="gameStarted || !quote"
+    [gameStarted]="gameStarted"
+    [timeLeft]="
+      gameEndTime && gameStartTime
+        ? gameEndTime - gameStartTime - userGameTime
+        : null
+    "
+    (confirmEvent)="changeDifficulty($event)"
+    (startEvent)="startGameTimer()"
+    (resetEvent)="resetGame()"
+    [showControls]="!!quote"
+  ></app-header>
+  <main *ngIf="quote">
+    <div class="content disabled" (click)="inputFocus($event)" #contentElement>
+      <input
+        [(ngModel)]="userInput"
+        class="user-input"
+        name="userInput"
+        id="userInput"
+        (ngModelChange)="inputChange($event)"
+        #inputElement
+        (paste)="(false)"
+        (copy)="(false)"
+        (cut)="(false)"
+      />
+      <div
+        class="quote-input-pair"
+        *ngFor="let obj of quote | inputCheck : userInput : gameStarted"
       >
-        START
-      </button>
-      <div class="time-left" *ngIf="gameStarted; else started">
-        Time Left:
-        {{
-          (gameEndTime! - gameStartTime! - userGameTime) / 1000
-            | roundToDecimal : 1
-        }}
+        <div class="quote-display" [innerHTML]="obj.quote"></div>
+        <div class="input-display" [innerHTML]="obj.input"></div>
       </div>
-      <ng-template #started>
-        <div class="countdown">
-          {{ "Countdown: " + countdown }}
-        </div>
-      </ng-template>
-      <button
-        type="button"
-        class="reset"
-        (click)="resetGame()"
-        [disabled]="!quote"
-      >
-        RESET
-      </button>
     </div>
-    <ng-container *ngIf="!gameStarted && score">
-      <div class="game-stats">
-        <div>Your time</div>
-        <div>{{ userGameTime / 1000 | roundToDecimal : 1 }}</div>
-        <div>Your score</div>
-        <div>{{ score.userScore }}</div>
-        <div>Max possible score</div>
-        <div>{{ score.maxScore }}</div>
-        <div>Words per minute</div>
-        <div>{{ score.wpm | roundToDecimal : 2 }}</div>
-        <div>Correct words per minute</div>
-        <div>{{ score.cwpm | roundToDecimal : 2 }}</div>
-      </div>
-    </ng-container>
-  </div>
-  <div class="content disabled" (click)="inputFocus($event)" #contentElement>
-    <input
-      [(ngModel)]="userInput"
-      class="user-input"
-      name="userInput"
-      id="userInput"
-      (ngModelChange)="inputChange($event)"
-      #inputElement
-    />
-    <div
-      class="quote-input-pair"
-      *ngFor="let obj of quote | inputCheck : userInput : gameStarted"
-    >
-      <div class="quote-display" [innerHTML]="obj.quote"></div>
-      <div class="input-display" [innerHTML]="obj.input"></div>
+    <div class="game-stats" *ngIf="!gameStarted && score">
+      <div>Your time</div>
+      <div>{{ userGameTime / 1000 | roundToDecimal : 1 }}</div>
+      <div>Your score</div>
+      <div>{{ score.userScore }}</div>
+      <div>Max possible score</div>
+      <div>{{ score.maxScore }}</div>
+      <div>Words per minute</div>
+      <div>{{ score.wpm | roundToDecimal : 2 }}</div>
+      <div>Correct words per minute</div>
+      <div>{{ score.cwpm | roundToDecimal : 2 }}</div>
+      <div>Accuracy</div>
+      <div>{{ score.accuracy | roundToDecimal : 2 }}</div>
     </div>
-  </div>
-</main>
+  </main>
+</div>
