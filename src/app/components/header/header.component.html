@@ -1,0 +1,41 @@
+<nav>
+  <div class="difficulty-controls">
+    <label for="difficulty"></label>
+    <select
+      name="difficulty"
+      id="difficulty"
+      (change)="changeDifficulty($event)"
+      [value]="difficulty"
+    >
+      <option value="veryeasy">Very Easy</option>
+      <option value="easy">Easy</option>
+      <option value="medium">Medium</option>
+      <option value="hard">Hard</option>
+      <option value="random">Random</option>
+    </select>
+    <button type="button" (click)="confirmDifficulty()">Confirm</button>
+  </div>
+  <div class="game-controls" *ngIf="showControls">
+    <div class="time-left" *ngIf="gameStarted && timeLeft; else started">
+      Time Left:
+      <span>{{ timeLeft / 1000 | roundToDecimal : 1 }}</span>
+    </div>
+    <ng-template #started>
+      <div class="countdown">
+        Countdown:
+        <span>{{ countdown }}</span>
+      </div>
+    </ng-template>
+    <button
+      type="button"
+      class="start"
+      (click)="startCountdown()"
+      [disabled]="btnDisabled || !!countdownSub"
+    >
+      START
+    </button>
+    <button type="button" class="reset" (click)="resetCountdown()">
+      RESET
+    </button>
+  </div>
+</nav>
