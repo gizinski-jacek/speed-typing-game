@@ -51,9 +51,8 @@ export class InputCheckPipe implements PipeTransform {
       const chunk = checkedWords.slice(i, i + 8).join(' ');
       userInputLines.push(chunk);
     }
-    // Hiding all lines except for the first one.
-    // Revealing next line when user types in
-    // enough words of current lines
+    // Hiding all lines except for the first one. Revealing next
+    // line when user types in enough words of current line.
     const visibleQuoteLines = quoteLines.map((line, index, array) =>
       index === 0
         ? line
