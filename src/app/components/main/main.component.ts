@@ -8,14 +8,14 @@ import { HttpService } from 'src/app/services/http.service';
   styleUrls: ['./main.component.scss'],
 })
 export class MainComponent implements OnInit {
-  @ViewChild('inputElement') inputElement!: ElementRef<HTMLInputElement>;
-  @ViewChild('contentElement') contentElement!: ElementRef<HTMLDivElement>;
-  @ViewChild('mainElement') mainElement!: ElementRef<HTMLElement>;
-
+  @ViewChild('inputElement') inputElement: ElementRef<HTMLInputElement> | null =
+    null;
+  @ViewChild('contentElement')
+  contentElement: ElementRef<HTMLDivElement> | null = null;
+  @ViewChild('containerElement')
+  containerElement: ElementRef<HTMLElement> | null = null;
   quote: string = '';
   userInput: string = '';
-  countdownSub: Subscription | null = null;
-  countdown: number = 5;
   gameStarted: boolean = false;
   gameTimeSub: Subscription | null = null;
   gameStartTime: number | null = null;
@@ -26,25 +26,32 @@ export class MainComponent implements OnInit {
     maxScore: number;
     wpm: number;
     cwpm: number;
+    accuracy: number;
   } | null = null;
+  difficulty: string | null = null;
 
   constructor(private http: HttpService) {}
 
-  ngOnInit(): void {
-    this.http.getRandomQuote().subscribe((res) => (this.quote = res.content));
-  }
+  ngOnInit(): void {}
 
   ngOnDestry(): void {
-    this.countdownSub?.unsubscribe();
+    this.gameTimeSub?.unsubscribe();
   }
 
   inputChange(input: string): void {
     this.userInput = input;
     const sameCharacterLength = this.userInput.length >= this.quote.length;
-    const sameWordLength =
-      this.userInput.split(' ').length > this.quote.split(' ').length;
-    if (this.gameStarted && (sameCharacterLength || sameWordLength)) {
-      this.userGameTime = new Date().getTime();
+    const userInputWords = this.userInput.split(' ');
+    const quoteWords = this.quote.split(' ');
+    const sameWordLength = userInputWords.length > quoteWords.length;
+    const lastWord =
+      userInputWords[userInputWords.length - 1] ===
+      quoteWords[quoteWords.length - 1];
+    if (
+      this.gameStartTime &&
+      (sameCharacterLength || sameWordLength || lastWord)
+    ) {
+      this.userGameTime = new Date().getTime() - this.gameStartTime;
       this.score = this.calculateScore(
         this.quote,
         this.userInput,
@@ -57,47 +64,35 @@ export class MainComponent implements OnInit {
   inputFocus(e: MouseEvent): void {
     e.stopPropagation();
     if (!this.gameStarted) return;
-    this.contentElement.nativeElement.classList.add('focused');
-    this.inputElement.nativeElement.focus();
+    this.contentElement?.nativeElement.classList.add('focused');
+    this.inputElement?.nativeElement.focus();
   }
 
   inputUnfocus(e: MouseEvent): void {
     e.stopPropagation();
-    this.contentElement.nativeElement.classList.remove('focused');
-    this.inputElement.nativeElement.blur();
+    this.contentElement?.nativeElement.classList.remove('focused');
+    this.inputElement?.nativeElement.blur();
   }
 
   ngOnDestroy(): void {
-    this.countdownSub?.unsubscribe();
     this.gameTimeSub?.unsubscribe();
-  }
-
-  startCountdown(): void {
-    if (this.countdownSub) return;
-    this.resetGame();
-    this.countdownSub = timer(0, 1000).subscribe(() => {
-      const newTime = this.countdown - 1;
-      if (newTime > 0) {
-        this.countdown = newTime;
-      } else {
-        this.startGameTimer();
-      }
-    });
   }
 
   startGameTimer(): void {
     this.gameStarted = true;
     this.gameStartTime = new Date().getTime();
-    this.gameEndTime = new Date().getTime() + (this.quote.length / 5) * 1000;
-    this.countdownSub?.unsubscribe();
-    this.countdownSub = null;
-    this.contentElement.nativeElement.classList.add('focused');
-    this.contentElement.nativeElement.classList.remove('disabled');
-    this.inputElement.nativeElement.focus();
+    this.gameEndTime = new Date().getTime() + (this.quote.length / 3) * 1000;
+    this.contentElement?.nativeElement.classList.add('focused');
+    this.contentElement?.nativeElement.classList.remove('disabled');
+    this.inputElement?.nativeElement.focus();
     this.gameTimeSub = timer(0, 100).subscribe(() => {
+      if (!this.gameStartTime || !this.gameEndTime) {
+        this.endGame();
+        return;
+      }
       const timeNow = new Date().getTime();
-      this.userGameTime = timeNow - this.gameStartTime!;
-      if (timeNow >= this.gameEndTime!) {
+      this.userGameTime = timeNow - this.gameStartTime;
+      if (timeNow >= this.gameEndTime) {
         this.score = this.calculateScore(
           this.quote,
           this.userInput,
@@ -110,12 +105,9 @@ export class MainComponent implements OnInit {
 
   endGame(): void {
     this.gameStarted = false;
-    this.contentElement.nativeElement.classList.remove('focused');
-    this.contentElement.nativeElement.classList.add('disabled');
-    this.inputElement.nativeElement.blur();
-    this.countdown = 5;
-    this.countdownSub?.unsubscribe();
-    this.countdownSub = null;
+    this.contentElement?.nativeElement.classList.remove('focused');
+    this.contentElement?.nativeElement.classList.add('disabled');
+    this.inputElement?.nativeElement.blur();
     this.gameTimeSub?.unsubscribe();
     this.gameTimeSub = null;
   }
@@ -123,16 +115,13 @@ export class MainComponent implements OnInit {
   resetGame(): void {
     this.score = null;
     this.gameStarted = false;
-    this.contentElement.nativeElement.classList.remove('focused');
-    this.contentElement.nativeElement.classList.add('disabled');
-    this.inputElement.nativeElement.blur();
-    this.countdown = 5;
+    this.contentElement?.nativeElement.classList.remove('focused');
+    this.contentElement?.nativeElement.classList.add('disabled');
+    this.inputElement?.nativeElement.blur();
     this.userInput = '';
     this.userGameTime = 0;
     this.gameStartTime = null;
     this.gameEndTime = null;
-    this.countdownSub?.unsubscribe();
-    this.countdownSub = null;
     this.gameTimeSub?.unsubscribe();
     this.gameTimeSub = null;
   }
@@ -146,6 +135,7 @@ export class MainComponent implements OnInit {
     maxScore: number;
     wpm: number;
     cwpm: number;
+    accuracy: number;
   } {
     const splitQuote: string[] = quote.split(' ');
     const splitUserInput: string[] = userInput.split(' ');
@@ -165,22 +155,32 @@ export class MainComponent implements OnInit {
           userScore = userScore + 4;
         }
       }
-      if (str.length < 3) {
+      if (str.length <= 3) {
         maxScore = maxScore + 1;
-      } else if (str.length > 3 && str.length < 7) {
+      } else if (str.length > 3 && str.length <= 7) {
         maxScore = maxScore + 2;
-      } else if (str.length > 7 && str.length < 11) {
+      } else if (str.length > 7 && str.length <= 11) {
         maxScore = maxScore + 3;
       } else {
         maxScore = maxScore + 4;
       }
     });
-    // Words per minute
-    const wpm = splitUserInput.length
+    // Words per minute.
+    const wpm = splitUserInput.filter((s) => s).length
       ? Math.round((splitUserInput.length / (userTime / 1000)) * 60)
       : 0;
-    // Correct words per minute
+    // Correct words per minute.
     const cwpm = Math.round((correctWords / (userTime / 1000)) * 60);
-    return { userScore, maxScore, wpm, cwpm };
+    // % accuracy.
+    const accuracy = (correctWords / splitQuote.length) * 100;
+    return { userScore, maxScore, wpm, cwpm, accuracy };
+  }
+
+  changeDifficulty(value: string): void {
+    this.resetGame();
+    this.difficulty = value;
+    this.http
+      .getRandomQuote(this.difficulty)
+      .subscribe((res) => (this.quote = res.content));
   }
 }
