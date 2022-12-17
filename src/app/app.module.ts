@@ -6,6 +6,7 @@ import { AppComponent } from './app.component';
 import { MainComponent } from './components/main/main.component';
 import { RoundToDecimalPipe } from './pipes/round-to-decimal.pipe';
 import { InputCheckPipe } from './pipes/input-check.pipe';
+import { HeaderComponent } from './components/header/header.component';
 
 @NgModule({
   declarations: [
@@ -13,6 +14,7 @@ import { InputCheckPipe } from './pipes/input-check.pipe';
     MainComponent,
     RoundToDecimalPipe,
     InputCheckPipe,
+    HeaderComponent,
   ],
   imports: [BrowserModule, FormsModule, HttpClientModule],
   providers: [],
