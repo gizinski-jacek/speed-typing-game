@@ -21,7 +21,20 @@ export class HttpService {
 
   constructor(private http: HttpClient) {}
 
-  getRandomQuote(): Observable<APIQuote> {
-    return this.http.get<APIQuote>(this.endpoint);
+  getRandomQuote(difficulty: string): Observable<APIQuote> {
+    let query = {};
+    if (difficulty === 'veryeasy') {
+      query = { maxLength: 64 };
+    }
+    if (difficulty === 'easy') {
+      query = { minLength: 64, maxLength: 128 };
+    }
+    if (difficulty === 'medium') {
+      query = { minLength: 128, maxLength: 256 };
+    }
+    if (difficulty === 'hard') {
+      query = { minLength: 256 };
+    }
+    return this.http.get<APIQuote>(this.endpoint, { params: query });
   }
 }
